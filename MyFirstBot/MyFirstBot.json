@@ -1,0 +1,11 @@
+{
+    "name": "My First Bot",
+    "version": "1.0",
+    "authors": [ "FlameFish" ],
+    "description": "My first bot",
+    "homepage": "https://github.com/TheFlameFish/robocode-bots-cs",
+    "countryCodes": [ "us" ],
+    "platform": ".Net 6.0",
+    "programmingLang": "C#"
+  }
+  
