@@ -6,6 +6,9 @@
         <LangVersion>8.0</LangVersion>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Robocode.TankRoyale.BotApi" Version="0.32.1"/>
+        <PackageReference Include="Robocode.TankRoyale.BotApi" Version="0.32.1" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\Shared\FlameFishLib\FlameFishLib.csproj" />
     </ItemGroup>
 </Project>

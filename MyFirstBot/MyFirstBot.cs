@@ -1,5 +1,6 @@
 using Robocode.TankRoyale.BotApi;
 using Robocode.TankRoyale.BotApi.Events;
+using Shared =  FlameFishLib;
 
 public class MyFirstBot : Bot
 {
