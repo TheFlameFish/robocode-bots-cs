@@ -1,0 +1,11 @@
+{
+    "name": "Sensor Bot",
+    "version": "1.0",
+    "authors": [ "FlameFish" ],
+    "description": "A test bot that just scans its environment.",
+    "homepage": "https://github.com/TheFlameFish/robocode-bots-cs",
+    "countryCodes": [ "us" ],
+    "platform": ".Net 6.0",
+    "programmingLang": "C#"
+  }
+  

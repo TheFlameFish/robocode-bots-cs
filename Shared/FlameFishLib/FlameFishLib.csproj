@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Robocode.TankRoyale.BotApi" Version="0.32.1" />
+  </ItemGroup>
+
 </Project>
