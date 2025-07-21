@@ -14,9 +14,9 @@ public class MyFirstBot : Bot
     {
         while (IsRunning) 
         {
-            Forward(100);
+            Forward(300);
             TurnRight(360);
-            Back(100);
+            Back(300);
             TurnRight(360);
         }
     }
