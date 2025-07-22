@@ -9,7 +9,7 @@ using Robocode.TankRoyale.BotApi.Graphics;
 
 public class SensorBot : Bot
 {
-    Vector2? target;
+    TrackedBotData target;
     
     // The main method starts our bot
     static void Main(string[] args)
@@ -33,7 +33,7 @@ public class SensorBot : Bot
         {
             RadarTurnRate = MaxRadarTurnRate;
 
-            Vector2? nearest = null;
+            TrackedBotData nearest = null;
             float nearestDistance = float.MaxValue;
             foreach (var pair in FieldTracker.TrackedBots)
             {
@@ -49,27 +49,41 @@ public class SensorBot : Bot
                 float distance = (new Vector2((float)X, (float)Y) - position).Length();
                 if (nearestDistance > distance)
                 {
-                    nearest = position;
+                    nearest = pair.Value;
                     nearestDistance = distance;
                 }
             }
 
             target = nearest;
 
-            if (nearest.HasValue)
+            if (target != null)
             {
+                var g = Graphics;
+                g.SetStrokeColor(Color.Red);
+                g.SetStrokeWidth(2);
+
+                Transform targetPosition = target.EstimatePosition(TurnNumber);
+
+                g.DrawCircle(targetPosition.X, targetPosition.Y, 25);
+                g.DrawText("TARGET", targetPosition.X + 30, targetPosition.Y + 30);
+
+                double power = Math.Clamp(
+                        -Math.Sin(nearestDistance / 800 / (0.5 * Math.PI)) * 4 + 3,
+                        1,
+                        3);
+
+                Transform leadPosition = target.GetLeadPosition(TurnNumber, new Transform(X, Y, Angle.FromDegrees(GunDirection)), power);
+
+                g.DrawRectangle(leadPosition.X, leadPosition.Y, 15, 15);
+                g.DrawText("LEAD", leadPosition.X + 20, leadPosition.Y + 20);
+
                 // Console.WriteLine($"Target: {nearest.Value}");
-                double bearing = this.GunBearingTo(nearest.Value.X, nearest.Value.Y);
+                double bearing = this.GunBearingTo(leadPosition.X, leadPosition.Y);
 
                 GunTurnRate = bearing / 1.5;
 
                 if (Math.Abs(bearing) < 1)
                 {
-                    double power = Math.Clamp(
-                        -Math.Sin(nearestDistance / 800 / (0.5 * Math.PI)) * 4 + 3,
-                        1,
-                        3);
-
                     Fire(power);
                 }
             }
@@ -108,12 +122,11 @@ public class SensorBot : Bot
         g.SetStrokeWidth(2);
         g.DrawLine(X, Y, gunRay.X, gunRay.Y);
 
-        if (target.HasValue)
+        if (target != null)
         {
-            Vector2 val = target.Value;
-
-            g.DrawCircle(val.X, val.Y, 25);
-            g.DrawText("TARGET", val.X + 30, val.Y + 30);
+            Transform pos = target.EstimatePosition(TurnNumber);
+            g.DrawCircle(pos.X, pos.Y, 25);
+            g.DrawText("TARGET", pos.X + 30, pos.Y + 30);
         }
     }
 
