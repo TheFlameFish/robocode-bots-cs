@@ -20,7 +20,7 @@ public class LockBot : Bot
     }
 
     State currentState = State.SEARCH;
-    
+
     // The main method starts our bot
     static void Main(string[] args)
     {
@@ -100,7 +100,8 @@ public class LockBot : Bot
 
             Transform leadPosition = target.GetLeadPosition(TurnNumber, new Transform(X, Y, Angle.FromDegrees(GunDirection)), power);
 
-            g.DrawRectangle(leadPosition.X, leadPosition.Y, 15, 15);
+            float leadSquareLen = 15;
+            g.DrawRectangle(leadPosition.X - leadSquareLen/2, leadPosition.Y - leadSquareLen/2, 15, 15);
             g.DrawText("LEAD", leadPosition.X + 20, leadPosition.Y + 20);
 
             // Console.WriteLine($"Target: {nearest.Value}");

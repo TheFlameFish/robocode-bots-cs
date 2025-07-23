@@ -58,7 +58,7 @@ public static class FieldTracker
                     botId,
                     currentTurn,
                     position,
-                    MiscUtil.VectorFromPolar(position.rotation, (float)speed),
+                    speed,
                     energy
                 )
             );

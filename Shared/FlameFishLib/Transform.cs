@@ -33,7 +33,7 @@ public class Transform
 
     public override string ToString()
     {
-        return $"<X: {this.X}, Y: {this.Y}, θ: {this.rotation.Degrees}°";
+        return $"<X: {this.X}, Y: {this.Y}, θ: {this.rotation.Degrees}°>";
     }
 
     public Transform Add(Transform other) {

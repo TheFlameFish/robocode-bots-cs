@@ -16,8 +16,15 @@ public readonly struct Angle {
 
     public Angle() : this(0) {}
 
+    public override string ToString()
+    {
+        return Degrees.ToString() + "°";
+    }
+
+
     // Using UpperCamelCase for methods feels wrong
-    public static Angle FromDegrees(double degrees) {
+    public static Angle FromDegrees(double degrees)
+    {
         return new Angle(degrees);
     }
 
