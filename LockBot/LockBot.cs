@@ -128,6 +128,38 @@ public class LockBot : Bot
         RadarTurnRate = bearing + (10 * Math.Sign(bearing));
     }
 
+    private void MoveToTarget()
+    {
+        if (target == null) { return; }
+
+        Transform targetPos = target.EstimatePosition(TurnNumber);
+
+        double targetDirection = DirectionTo(targetPos.X, targetPos.Y);
+
+        double bearing = this.CalcBearing(targetDirection);
+        TurnRate = bearing; // API clamps automatically
+
+        if (Math.Abs(bearing) < 5)
+        {
+            if (DistanceTo(targetPos.X, targetPos.Y) > 200)
+            {
+                TargetSpeed = MaxSpeed;
+            }
+            else if (DistanceTo(targetPos.X, targetPos.Y) < 100)
+            {
+                TargetSpeed = -MaxSpeed;
+            }
+            else
+            {
+                TargetSpeed = 0;
+            }
+        }
+        else
+        {
+            TargetSpeed = 0;
+        }
+    }
+
     public override void OnScannedBot(ScannedBotEvent scannedBotEvent)
     {
         Console.WriteLine($"Scanned bot {scannedBotEvent.ScannedBotId}");
@@ -181,6 +213,7 @@ public class LockBot : Bot
                 }
                 ScanTarget();
                 AimAndFire();
+                MoveToTarget();
                 break;
         }
 
