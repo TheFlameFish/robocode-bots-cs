@@ -107,7 +107,7 @@ public class LockBot : Bot
             // Console.WriteLine($"Target: {nearest.Value}");
             double bearing = this.GunBearingTo(leadPosition.X, leadPosition.Y);
 
-            GunTurnRate = bearing / 1.5;
+            GunTurnRate = bearing;
 
             if (GunHeat == 0 && Math.Abs(bearing) < 1)
             {
