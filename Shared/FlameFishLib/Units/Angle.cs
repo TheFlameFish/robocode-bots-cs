@@ -71,17 +71,17 @@ public readonly struct Angle {
         return new Angle(deg);
     }
 
-    public double MinimalAngleTo(Angle target)
+    public Angle MinimalAngleTo(Angle target)
     {
         double diff = (target.rotationDegrees - rotationDegrees) % 360;
         if (diff < -180) diff += 360;
         if (diff > 180) diff -= 360;
-        return diff;
+        return FromDegrees(diff);
     }
 
     public Angle RotateTowards(Angle target, double maxDegrees)
     {
-        double turn = MinimalAngleTo(target);
+        double turn = MinimalAngleTo(target).Degrees;
         if (Math.Abs(turn) <= maxDegrees)
             return target;
         return new Angle(rotationDegrees + Math.Sign(turn) * maxDegrees);

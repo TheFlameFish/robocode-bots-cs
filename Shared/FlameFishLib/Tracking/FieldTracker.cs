@@ -74,6 +74,7 @@ public static class FieldTracker
     {
         if (trackedBots.ContainsKey(botId))
         {
+            trackedBots[botId].energy = 0;
             trackedBots.Remove(botId);
         }
     }

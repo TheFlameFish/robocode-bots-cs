@@ -1,0 +1,11 @@
+{
+    "name": "Lock Bot",
+    "version": "1.0",
+    "authors": [ "FlameFish" ],
+    "description": "A bot that locks onto a target and tries to stay near it.",
+    "homepage": "https://github.com/TheFlameFish/robocode-bots-cs",
+    "countryCodes": [ "us" ],
+    "platform": ".Net 6.0",
+    "programmingLang": "C#"
+  }
+  
