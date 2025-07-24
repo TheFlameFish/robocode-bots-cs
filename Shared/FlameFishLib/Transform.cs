@@ -7,7 +7,8 @@ public class Transform
     public Vector2 translation;
     public Angle rotation;
 
-    public float X {
+    public float X
+    {
         get => translation.X;
         set => translation.X = value;
     }

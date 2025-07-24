@@ -9,6 +9,13 @@ using Robocode.TankRoyale.BotApi.Graphics;
 
 public class LockBot : Bot
 {
+    const double CIRCLING_DISTANCE = 200.0;
+    const double TOO_CLOSE_ERROR = -50;
+    const double TOO_FAR_ERROR = 200;
+    const double CIRCLING_OFFSET_GAIN = 0.6;
+
+    bool circlingClockwise = false;
+
     TrackedBotData target;
 
     double scanProgress = 0;
@@ -101,7 +108,7 @@ public class LockBot : Bot
             Transform leadPosition = target.GetLeadPosition(TurnNumber, new Transform(X, Y, Angle.FromDegrees(GunDirection)), power);
 
             float leadSquareLen = 15;
-            g.DrawRectangle(leadPosition.X - leadSquareLen/2, leadPosition.Y - leadSquareLen/2, 15, 15);
+            g.DrawRectangle(leadPosition.X - leadSquareLen / 2, leadPosition.Y - leadSquareLen / 2, 15, 15);
             g.DrawText("LEAD", leadPosition.X + 20, leadPosition.Y + 20);
 
             // Console.WriteLine($"Target: {nearest.Value}");
@@ -152,6 +159,62 @@ public class LockBot : Bot
             else
             {
                 TargetSpeed = 0;
+            }
+        }
+        else
+        {
+            TargetSpeed = 0;
+        }
+    }
+
+    private void CircleTarget()
+    {
+        if (target == null) { return; }
+        var g = Graphics;
+        g.SetStrokeColor(Color.Blue);
+        g.SetStrokeWidth(2);
+
+        Transform targetPos = target.EstimatePosition(TurnNumber);
+
+        g.DrawCircle(targetPos.X, targetPos.Y, CIRCLING_DISTANCE);
+
+        double targetAngle = DirectionTo(targetPos.X, targetPos.Y) + 90;
+
+        float distanceError = (new Vector2(targetPos.X, targetPos.Y) - new Vector2((float)X, (float)Y)).Length() - (float)CIRCLING_DISTANCE;
+
+        g.DrawText(distanceError.ToString(), targetPos.X + CIRCLING_DISTANCE, targetPos.Y + CIRCLING_DISTANCE);
+
+        bool tooClose = distanceError < TOO_CLOSE_ERROR;
+        bool tooFar = distanceError > TOO_FAR_ERROR;
+        g.DrawCircle(targetPos.X, targetPos.Y, CIRCLING_DISTANCE + TOO_FAR_ERROR);
+        g.DrawCircle(targetPos.X, targetPos.Y, CIRCLING_DISTANCE + TOO_CLOSE_ERROR);
+
+        if (!(tooFar))
+        {
+            targetAngle += distanceError * CIRCLING_OFFSET_GAIN * (circlingClockwise ? -1 : 1);
+        }
+        else if (tooFar)
+        {
+            targetAngle -= 90; // Too far away, rush to acceptable dist
+        }
+        // else if (tooClose)
+        // {
+        //     targetAngle += 90; // Too close, rush to acceptable dist
+        // }
+
+        double desiredTurningRate = CalcBearing(targetAngle);
+
+        TurnRate = desiredTurningRate;
+
+        if (Math.Abs(desiredTurningRate) < 5)
+        {
+            if (!(tooFar | tooClose))
+            {
+                TargetSpeed = 5 * (circlingClockwise ? 1 : -1);
+            }
+            else
+            {
+                TargetSpeed = MaxSpeed;
             }
         }
         else
@@ -213,7 +276,7 @@ public class LockBot : Bot
                 }
                 ScanTarget();
                 AimAndFire();
-                MoveToTarget();
+                CircleTarget();
                 break;
         }
 
@@ -224,4 +287,10 @@ public class LockBot : Bot
     {
 
     }
+
+    public override void OnHitWall(HitWallEvent botHitWallEvent)
+    {
+        circlingClockwise = !circlingClockwise;
+    }
+
 }
