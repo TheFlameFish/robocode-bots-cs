@@ -10,7 +10,7 @@ using Robocode.TankRoyale.BotApi.Graphics;
 public class LockBot : Bot
 {
     const double CIRCLING_DISTANCE = 200.0;
-    const double TOO_CLOSE_ERROR = -50;
+    const double TOO_CLOSE_ERROR = -100;
     const double TOO_FAR_ERROR = 200;
     const double CIRCLING_OFFSET_GAIN = 0.6;
 
@@ -189,7 +189,7 @@ public class LockBot : Bot
         g.DrawCircle(targetPos.X, targetPos.Y, CIRCLING_DISTANCE + TOO_FAR_ERROR);
         g.DrawCircle(targetPos.X, targetPos.Y, CIRCLING_DISTANCE + TOO_CLOSE_ERROR);
 
-        if (!(tooFar))
+        if (!(tooFar | tooClose))
         {
             targetAngle += distanceError * CIRCLING_OFFSET_GAIN * (circlingClockwise ? -1 : 1);
         }
@@ -197,10 +197,10 @@ public class LockBot : Bot
         {
             targetAngle -= 90; // Too far away, rush to acceptable dist
         }
-        // else if (tooClose)
-        // {
-        //     targetAngle += 90; // Too close, rush to acceptable dist
-        // }
+        else if (tooClose)
+        {
+            targetAngle += 90; // Too close, rush to acceptable dist
+        }
 
         double desiredTurningRate = CalcBearing(targetAngle);
 
