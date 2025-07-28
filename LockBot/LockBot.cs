@@ -14,7 +14,10 @@ public class LockBot : Bot
     const double TOO_FAR_ERROR = 200;
     const double CIRCLING_OFFSET_GAIN = 0.6;
 
+    readonly Random randomizer = new Random();
+
     bool circlingClockwise = false;
+    int circlingSwitchTimer = 20;
 
     TrackedBotData target;
 
@@ -167,12 +170,25 @@ public class LockBot : Bot
         }
     }
 
+    private void SwitchCirclingDirection()
+    {
+        circlingSwitchTimer = randomizer.Next(10, 150);
+        circlingClockwise = !circlingClockwise;
+        Console.WriteLine("Switching direction");
+    }
+
     private void CircleTarget()
     {
         if (target == null) { return; }
         var g = Graphics;
         g.SetStrokeColor(Color.Blue);
         g.SetStrokeWidth(2);
+
+        circlingSwitchTimer--;
+        if (circlingSwitchTimer <= 0)
+        {
+            SwitchCirclingDirection();
+        }
 
         Transform targetPos = target.EstimatePosition(TurnNumber);
 
