@@ -46,7 +46,7 @@ for subdir in subdirs:
                 shutil.copyfile(f"./{subdir}/{item.name}", f"{path}/{item.name}")
     
     print(f"Compiling C# for {subdir}...")
-    subprocess.run(f"dotnet publish -c Release -o \"{path}/exec\" {subdir}", check=True)
+    subprocess.run(['dotnet', 'publish', '-c', 'Release', '-o', f'{path}/exec', subdir], check=True)
 
     print(f"Creating run scripts for {subdir}...")
 
