@@ -5,7 +5,7 @@ import shutil
 COPIED_FILES = [".json"]
 PACKAGED_DIR = "./Packaged"
 
-CMD_SCRIPT = "dotnet exec/{NAME}.dll>nul"
+CMD_SCRIPT = "dotnet exec/{NAME}.dll > nul"
 SH_SCRIPT = "#!/bin/sh \n dotnet exec/{NAME}.dll"
 
 subdirs = []
