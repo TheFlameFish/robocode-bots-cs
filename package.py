@@ -38,8 +38,9 @@ for subdir in subdirs:
         for item in d:
             copy = False
             for extension in COPIED_FILES:
-                if item.name.endswith(extension): copy = True
-            
+                if item.name.endswith(extension):
+                    copy = True
+                    break
             if copy:
                 print(f"Copying file {item.name}...")
                 shutil.copyfile(f"./{subdir}/{item.name}", f"{path}/{item.name}")
