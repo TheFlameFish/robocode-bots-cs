@@ -1,3 +1,4 @@
+import stat
 import subprocess
 import os
 import shutil
@@ -51,12 +52,18 @@ for subdir in subdirs:
     print(f"Creating run scripts for {subdir}...")
 
     for script_data in [(CMD_SCRIPT, "cmd"), (SH_SCRIPT, "sh")]:
-        with open(f"{path}/{subdir}.{script_data[1]}", "w") as file:
+        file_path = f"{path}/{subdir}.{script_data[1]}"
+        with open(file_path, "w") as file:
             file.write(script_data[0].replace("{NAME}", subdir))
+        try:
+            os.chmod(file_path, stat.S_IRWXO | stat.S_IRWXG | stat.S_IRWXU)
+        except Exception as e:
+            print(f"Failed to chmod with error: {e}")
 
     print(f"Finished packaging {subdir}.")
 
 print("Packaged all bots. Now zipping and removing directory...")
 
 shutil.make_archive(PACKAGED_DIR, 'zip', PACKAGED_DIR)
+print("Removing.")
 shutil.rmtree(PACKAGED_DIR)
