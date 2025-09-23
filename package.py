@@ -2,9 +2,10 @@ import stat
 import subprocess
 import os
 import shutil
+import tarfile
 
 COPIED_FILES = [".json"]
-PACKAGED_DIR = "./Packaged"
+PACKAGED_DIR = "Packaged"
 
 CMD_SCRIPT = "dotnet exec/{NAME}.dll > nul"
 SH_SCRIPT = "#!/bin/sh \n dotnet exec/{NAME}.dll"
@@ -53,16 +54,33 @@ for subdir in subdirs:
 
     for script_data in [(CMD_SCRIPT, "cmd"), (SH_SCRIPT, "sh")]:
         file_path = f"{path}/{subdir}.{script_data[1]}"
-        with open(file_path, "w") as file:
-            file.write(script_data[0].replace("{NAME}", subdir))
-        try:
-            os.chmod(file_path, stat.S_IRWXO | stat.S_IRWXG | stat.S_IRWXU)
-        except Exception as e:
-            print(f"Failed to chmod with error: {e}")
+        with open(file_path, "w") as archive:
+            archive.write(script_data[0].replace("{NAME}", subdir))
 
     print(f"Finished packaging {subdir}.")
 
-print("Packaged all bots. Now zipping and removing directory...")
+print("Packaged all bots. Now archiving and removing directory...")
+
+def tar_perms_filter(tarinfo: tarfile.TarInfo):
+    if tarinfo.name.endswith(".sh") or tarinfo.isdir():
+        tarinfo.mode = 0o755
+    else:
+        tarinfo.mode = 0o644
+
+    return tarinfo
+
+with tarfile.open(f"{PACKAGED_DIR}.tar.gz", "w:gz") as tar:
+    for dir_path, dir_names, file_names in os.walk(PACKAGED_DIR):
+        dir_path_relative = os.path.relpath(dir_path, PACKAGED_DIR) # Don't nest everything inside a 'packaged' dir in the archive
+        dir_path_archive = dir_path_relative.replace(os.path.sep, "/")
+        if dir_path_relative != ".":
+            tar.add(dir_path, dir_path_archive, recursive=False, filter=perms_filter)
+
+        for file_name in file_names:
+            file_path = os.path.join(dir_path, file_name)
+            file_path_archive = f"{dir_path_archive}/{file_name}"
+            tar.add(file_path, file_path_archive, filter=perms_filter)
+
 
 shutil.make_archive(PACKAGED_DIR, 'zip', PACKAGED_DIR)
 print("Removing.")
