@@ -74,12 +74,12 @@ with tarfile.open(f"{PACKAGED_DIR}.tar.gz", "w:gz") as tar:
         dir_path_relative = os.path.relpath(dir_path, PACKAGED_DIR) # Don't nest everything inside a 'packaged' dir in the archive
         dir_path_archive = dir_path_relative.replace(os.path.sep, "/")
         if dir_path_relative != ".":
-            tar.add(dir_path, dir_path_archive, recursive=False, filter=perms_filter)
+            tar.add(dir_path, dir_path_archive, recursive=False, filter=tar_perms_filter)
 
         for file_name in file_names:
             file_path = os.path.join(dir_path, file_name)
             file_path_archive = f"{dir_path_archive}/{file_name}"
-            tar.add(file_path, file_path_archive, filter=perms_filter)
+            tar.add(file_path, file_path_archive, filter=tar_perms_filter)
 
 
 shutil.make_archive(PACKAGED_DIR, 'zip', PACKAGED_DIR)
