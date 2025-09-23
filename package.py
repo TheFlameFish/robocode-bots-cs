@@ -7,6 +7,8 @@ import tarfile
 COPIED_FILES = [".json"]
 PACKAGED_DIR = "Packaged"
 
+ARCHIVE_DIR = "Archives"
+
 CMD_SCRIPT = "dotnet exec/{NAME}.dll > nul"
 SH_SCRIPT = "dotnet exec/{NAME}.dll"
 
@@ -69,19 +71,34 @@ def tar_perms_filter(tarinfo: tarfile.TarInfo):
 
     return tarinfo
 
-with tarfile.open(f"{PACKAGED_DIR}.tar.gz", "w:gz") as tar:
-    for dir_path, dir_names, file_names in os.walk(PACKAGED_DIR):
-        dir_path_relative = os.path.relpath(dir_path, PACKAGED_DIR) # Don't nest everything inside a 'packaged' dir in the archive
-        dir_path_archive = dir_path_relative.replace(os.path.sep, "/")
-        if dir_path_relative != ".":
-            tar.add(dir_path, dir_path_archive, recursive=False, filter=tar_perms_filter)
+def make_archives(directory: str, name: str = None):
+    if name is None: name = directory.split("/")[-1]
 
-        for file_name in file_names:
-            file_path = os.path.join(dir_path, file_name)
-            file_path_archive = f"{dir_path_archive}/{file_name}"
-            tar.add(file_path, file_path_archive, filter=tar_perms_filter)
+    print(f"Archiving {name} with tar.gz")
+    with tarfile.open(f"{ARCHIVE_DIR}/{name}.tar.gz", "w:gz") as tar:
+        for dir_path, _dir_names, file_names in os.walk(directory):
+            dir_path_relative = os.path.relpath(dir_path, directory) # Don't nest everything inside a 'packaged' dir in the archive
+            dir_path_archive = dir_path_relative.replace(os.path.sep, "/")
+            if dir_path_relative != ".":
+                tar.add(dir_path, dir_path_archive, recursive=False, filter=tar_perms_filter)
 
+            for file_name in file_names:
+                file_path = os.path.join(dir_path, file_name)
+                file_path_archive = f"{dir_path_archive}/{file_name}"
+                tar.add(file_path, file_path_archive, filter=tar_perms_filter)
 
-shutil.make_archive(PACKAGED_DIR, 'zip', PACKAGED_DIR)
+    print(f"Archiving {name} with zip")
+    shutil.make_archive(f"{ARCHIVE_DIR}/{name}", 'zip', directory)
+
+if os.path.exists(ARCHIVE_DIR):
+        # Probably best to clear out the dir so all files are guaranteed up-to-date
+        shutil.rmtree(ARCHIVE_DIR)
+
+os.mkdir(ARCHIVE_DIR)
+
+make_archives(PACKAGED_DIR, "FlameFishRobocode")
+for bot in os.listdir(PACKAGED_DIR):
+    make_archives(f"{PACKAGED_DIR}/{bot}")
+
 print("Removing.")
 shutil.rmtree(PACKAGED_DIR)
